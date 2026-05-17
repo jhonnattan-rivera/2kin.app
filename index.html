@@ -1,7 +1,8 @@
 <!-- apps for kindle -->
 <!doctype html>
 <html lang="es">
-  <head>
+
+<head>
     <meta charset="utf-8" />
     <title>Inicio</title>
     <style>
@@ -10,31 +11,40 @@
             padding: 0;
             box-sizing: border-box;
         }
+
         .d-flex {
             display: flex;
         }
+
         .justify-content-center {
             justify-content: center;
         }
+
         .align-items-center {
             align-items: center;
         }
+
         .flex-column {
             flex-direction: column;
         }
+
         .row {
             display: flex;
             flex-wrap: wrap;
         }
+
         .col {
             flex: 1;
         }
+
         .d-none {
             display: none;
         }
+
         .hidden {
             display: none;
         }
+
         .file-link {
             display: inline-flex;
             flex-direction: column;
@@ -46,26 +56,31 @@
             min-width: 120px;
             padding: 12px 8px;
         }
+
         .file-link img {
             width: 72px;
             height: 72px;
         }
+
         .file-label {
             font-size: 16px;
             font-weight: 600;
             text-align: center;
             line-height: 1.2;
         }
+
         body {
             font-family: Arial, sans-serif;
             display: grid;
             grid-template-rows: 1fr auto;
             min-height: 100vh;
         }
+
         main {
             padding: 20px;
             overflow-y: auto;
         }
+
         footer {
             text-align: center;
             padding: 20px;
@@ -79,32 +94,86 @@
         .hidden { display: none; }
         #app { text-align: center; padding: 20px; border: 1px solid #ccc; background: white; border-radius: 8px; }
     </style> -->
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
-  </head>
-  <body>
-    <main> 
+    <!-- <script src="https://accounts.google.com/gsi/client" async defer></script> -->
+    <!-- <script>
+        window.onload = function () {
+            // 2. Inicializar el cliente de Google
+            google.accounts.oauth2.initTokenClient({
+                client_id: "772285279790-jjia3ncdumgh5ne3ik7venj0ojdsir7u.apps.googleusercontent.com",
+                ux_mode: "redirect", // Evita el popup, usa redirección de pestaña completa
+
+                // IMPORTANTE: Al no definir 'login_uri', Google por defecto 
+                // redirigirá a la URL actual agregando los parámetros en el Hash (#) o Query
+                // evitando mandar un POST.
+            });
+
+            // 3. Renderizar el botón en el contenedor
+            google.accounts.id.renderButton(
+                document.getElementById("botonGoogle"),
+                { theme: "outline", size: "large" }  // Personalización del botón
+            );
+        }
+    </script> -->
+</head>
+
+<body>
+    <button id="btn-google-login" type="button">
+        Iniciar sesión con Google
+    </button>
+    <script>
+        function loginGoogle() {
+            var clientId = "772285279790-jjia3ncdumgh5ne3ik7venj0ojdsir7u.apps.googleusercontent.com";
+
+            // Keep the current folder so redirect works in subpaths (e.g. GitHub Pages).
+            var path = window.location.pathname || "/";
+            var basePath = path.replace(/[^/]*$/, "");
+
+            if (!window.location.origin || window.location.origin === "null") {
+                alert("Abre esta app desde http://localhost o un dominio web. Google OAuth no funciona con file://");
+                return;
+            }
+
+            var redirectUri = window.location.origin + basePath + "redirect_login.html";
+            var scope = "openid profile email";
+            var nonce = Math.random().toString(36).slice(2);
+            var state = Math.random().toString(36).slice(2);
+
+            var url =
+                "https://accounts.google.com/o/oauth2/v2/auth" +
+                "?client_id=" + encodeURIComponent(clientId) +
+                "&redirect_uri=" + encodeURIComponent(redirectUri) +
+                "&response_type=" + encodeURIComponent("id_token token") +
+                "&scope=" + encodeURIComponent(scope) +
+                "&nonce=" + encodeURIComponent(nonce) +
+                "&state=" + encodeURIComponent(state);
+
+            window.location.assign(url);
+        }
+
+        document.getElementById("btn-google-login").addEventListener("click", loginGoogle);
+    </script>
+    <hr>
+    <main>
         <!-- login oauth google -->
         <div class="d-flex justify-content-center align-items-center flex-column" style="height: 100px;">
             <h1>2Kin Appv2</h1>
             apps for kindle
         </div>
-<div id="login-container">
-        <h2>Inicia sesión para usar Gemini</h2>
-        <div id="g_id_onload"
-             data-client_id="772285279790-jjia3ncdumgh5ne3ik7venj0ojdsir7u.apps.googleusercontent.com"
-             data-callback="manejarLogin"
-             data-auto_prompt="false">
+        <!-- <div id="login-container">
+            <h2>Inicia sesión para usar Gemini</h2>
+            <div id="g_id_onload"
+                data-client_id="772285279790-jjia3ncdumgh5ne3ik7venj0ojdsir7u.apps.googleusercontent.com"
+                data-login_uri="/" data-ux_mode="redirect" data-response_type="token">
             </div>
-            <!-- data-login_uri="https://jhonnattan-rivera.github.io/2kin.app" -->
-        <div class="g_id_signin" data-type="standard"></div>
-    </div>
+            <div class="g_id_signin" data-type="standard"></div>
+        </div> -->
 
-    <div id="app" class="hidden">
-        <h2>¡Bienvenido, <span id="user-name"></span>!</h2>
-        <p>Tu sesión está activa. Aquí irá tu input para Gemini.</p>
-        <button onclick="cerrarSesion()">Cerrar sesión</button>
-    </div>
-
+        <div id="app" class="hidden">
+            <h2>¡Bienvenido, <span id="user-name"></span>!</h2>
+            <p>Tu sesión está activa. Aquí irá tu input para Gemini.</p>
+            <button onclick="cerrarSesion()">Cerrar sesión</button>
+        </div>
+        <!-- 
     <script>
         const loginUriByHost = {
             'localhost:3000': 'http://localhost:3000/redirect_login',
@@ -177,7 +246,7 @@
         }
 
         document.addEventListener('DOMContentLoaded', evaluarSesionGuardada);
-    </script>
+    </script> -->
     </main>
     <main class="d-none ">
         <!-- <p style="background-color: black; color: white;" id="ultimo_guardado"></p> -->
@@ -210,15 +279,16 @@
     </main>
 
     <footer>
-      <p>2Kin App - 2026 - Annie Systems</p>
+        <p>2Kin App - 2026 - Annie Systems</p>
     </footer>
-  </body>
-  <script>
+</body>
+<script>
     // document.getElementById('ultimo_guardado').innerText = `Último guardado: ${new Date().toLocaleTimeString()}`;
 
     // auto refresh every 5 seconds
     // setInterval(() => {
     //     location.reload();
     // }, 5000);
-  </script>
+</script>
+
 </html>
