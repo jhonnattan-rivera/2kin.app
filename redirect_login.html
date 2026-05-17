@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <title>Procesando acceso</title>
+  </head>
+  <body>
+    <p>Procesando inicio de sesion...</p>
+    <script>
+      const token = __GOOGLE_CREDENTIAL__;
+
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        localStorage.setItem('google_token', token);
+        localStorage.setItem('user_name', payload.name || 'usuario');
+        window.location.replace('/');
+      } catch (error) {
+        document.body.innerText = 'No se pudo procesar el inicio de sesion.';
+        console.error('Error procesando redirect de Google:', error);
+      }
+    </script>
+  </body>
+</html>
