@@ -1,0 +1,172 @@
+<!-- apps for kindle -->
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <title>Inicio</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        .d-flex {
+            display: flex;
+        }
+        .justify-content-center {
+            justify-content: center;
+        }
+        .align-items-center {
+            align-items: center;
+        }
+        .flex-column {
+            flex-direction: column;
+        }
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .col {
+            flex: 1;
+        }
+        .d-none {
+            display: none;
+        }
+        .file-link {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            text-decoration: none;
+            color: inherit;
+            min-width: 120px;
+            padding: 12px 8px;
+        }
+        .file-link img {
+            width: 72px;
+            height: 72px;
+        }
+        .file-label {
+            font-size: 16px;
+            font-weight: 600;
+            text-align: center;
+            line-height: 1.2;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            display: grid;
+            grid-template-rows: 1fr auto;
+            min-height: 100vh;
+        }
+        main {
+            padding: 20px;
+            overflow-y: auto;
+        }
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #888;
+            background-color: #f9f9f9;
+            border-top: 1px solid #eee;
+        }
+    </style>
+    <!-- <style>
+        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; background: #f9f9f9; }
+        .hidden { display: none; }
+        #app { text-align: center; padding: 20px; border: 1px solid #ccc; background: white; border-radius: 8px; }
+    </style> -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+  </head>
+  <body>
+    <main> 
+        <!-- login oauth google -->
+        <div class="d-flex justify-content-center align-items-center flex-column" style="height: 100px;">
+            <h1>2Kin App</h1>
+            apps for kindle
+        </div>
+<div id="login-container">
+        <h2>Inicia sesión para usar Gemini</h2>
+        <div id="g_id_onload"
+             data-client_id="772285279790-jjia3ncdumgh5ne3ik7venj0ojdsir7u.apps.googleusercontent.com"
+             data-callback="manejarLogin"
+             data-auto_prompt="false">
+        </div>
+        <div class="g_id_signin" data-type="standard"></div>
+    </div>
+
+    <div id="app" class="hidden">
+        <h2>¡Bienvenido, <span id="user-name"></span>!</h2>
+        <p>Tu sesión está activa. Aquí irá tu input para Gemini.</p>
+        <button onclick="cerrarSesion()">Cerrar sesión</button>
+    </div>
+
+    <script>
+        // Función que ejecuta Google automáticamente al loguearse con éxito
+        function manejarLogin(response) {
+            // El 'credential' es un JWT (JSON Web Token) enviado por Google
+            const token = response.credential;
+            
+            // Decodificamos el JWT de forma manual y ultra ligera para sacar los datos del usuario
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            
+            // Mostramos los datos en la interfaz
+            document.getElementById('user-name').innerText = payload.name;
+            
+            // Intercambiamos de vista de forma simple
+            document.getElementById('login-container').classList.add('hidden');
+            document.getElementById('app').classList.remove('hidden');
+
+            console.log("Token de Google obtenido:", token);
+            // NOTA: Este token es el que deberías mandar a tu backend para validar y conectar con Gemini
+        }
+
+        function cerrarSesion() {
+            // Limpiamos y recargamos la página para resetear el estado
+            location.reload();
+        }
+    </script>
+    </main>
+    <main class="d-none ">
+        <!-- <p style="background-color: black; color: white;" id="ultimo_guardado"></p> -->
+        <div class="d-flex justify-content-center align-items-center flex-column" style="height: 100px;">
+            <h1>2Kin App</h1>
+            apps for kindle
+        </div>
+        <hr>
+        <div class="d-flex">
+            <!-- <div class="col d-flex justify-content-center align-items-center">
+                <a class="file-link" href="#">
+                    <img src="/icons/folder.svg" alt="Carpeta" />
+                    <span class="file-label">Archivos</span>
+                </a>
+            </div> -->
+            <div class="col d-flex justify-content-center align-items-center">
+                <a class="file-link" href="#">
+                    <img src="/icons/gemini.svg" alt="Gemini" />
+                    <span class="file-label">Gemini</span>
+                </a>
+            </div>
+            <!-- <div class="col d-flex justify-content-center align-items-center">c</div> -->
+        </div>
+        <!-- <hr>
+        <div>
+            sandbox
+            <br>
+            <input type="file" webkitdirectory />
+        </div> -->
+    </main>
+
+    <footer>
+      <p>2Kin App - 2026 - Annie Systems</p>
+    </footer>
+  </body>
+  <script>
+    // document.getElementById('ultimo_guardado').innerText = `Último guardado: ${new Date().toLocaleTimeString()}`;
+
+    // auto refresh every 5 seconds
+    // setInterval(() => {
+    //     location.reload();
+    // }, 5000);
+  </script>
+</html>
