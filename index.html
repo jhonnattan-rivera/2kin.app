@@ -85,7 +85,7 @@
     <main> 
         <!-- login oauth google -->
         <div class="d-flex justify-content-center align-items-center flex-column" style="height: 100px;">
-            <h1>2Kin Appv2</h1>
+            <h1>2Kin Appv3</h1>
             apps for kindle
         </div>
 <div id="login-container">
@@ -108,9 +108,16 @@
     </div>
 
     <script>
+        const currentPath = window.location.pathname;
+        const basePath = currentPath === '/'
+            ? ''
+            : currentPath.endsWith('.html')
+                ? currentPath.replace(/\/[^/]+$/, '')
+                : currentPath.replace(/\/$/, '');
+
         document.getElementById('g_id_onload').setAttribute(
             'data-login_uri',
-            `${window.location.origin}/redirect_login`
+            `${window.location.origin}${basePath}/redirect_login`
         );
 
         function mostrarVistaAutenticada(userName) {
