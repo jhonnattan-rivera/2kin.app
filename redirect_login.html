@@ -61,7 +61,12 @@
             localStorage.setItem('user_name', userName);
 
             statusEl.innerText = 'Inicio de sesion correcto. Redirigiendo...';
-            window.location.replace('/');
+            const appHomeByHost = {
+              'localhost:3000': 'http://localhost:3000/',
+              'jhonnattan-rivera.github.io': 'https://jhonnattan-rivera.github.io/2kin.app/'
+            };
+            const nextUrl = appHomeByHost[window.location.host] || '/';
+            window.location.replace(nextUrl);
           } catch (error) {
             statusEl.innerText = 'No se pudo procesar el inicio de sesion.';
             console.error('Error procesando redirect de Google:', error);
