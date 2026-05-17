@@ -32,6 +32,9 @@
         .d-none {
             display: none;
         }
+        .hidden {
+            display: none;
+        }
         .file-link {
             display: inline-flex;
             flex-direction: column;
@@ -82,7 +85,7 @@
     <main> 
         <!-- login oauth google -->
         <div class="d-flex justify-content-center align-items-center flex-column" style="height: 100px;">
-            <h1>2Kin App v0.2</h1>
+            <h1>2Kin Appv2</h1>
             apps for kindle
         </div>
 <div id="login-container">
@@ -91,9 +94,10 @@
              data-client_id="772285279790-jjia3ncdumgh5ne3ik7venj0ojdsir7u.apps.googleusercontent.com"
              data-callback="manejarLogin"
              data-ux_mode="redirect"
-             data-login_uri="https://jhonnattan-rivera.github.io/2kin.app"
+               data-login_uri=""
              data-auto_prompt="false">
-        </div>
+            </div>
+            <!-- data-login_uri="https://jhonnattan-rivera.github.io/2kin.app" -->
         <div class="g_id_signin" data-type="standard"></div>
     </div>
 
@@ -104,6 +108,34 @@
     </div>
 
     <script>
+        document.getElementById('g_id_onload').setAttribute(
+            'data-login_uri',
+            `${window.location.origin}/redirect_login`
+        );
+
+        function mostrarVistaAutenticada(userName) {
+            document.getElementById('user-name').innerText = userName || 'usuario';
+            document.getElementById('login-container').classList.add('hidden');
+            document.getElementById('app').classList.remove('hidden');
+        }
+
+        function mostrarVistaLogin() {
+            document.getElementById('login-container').classList.remove('hidden');
+            document.getElementById('app').classList.add('hidden');
+        }
+
+        function evaluarSesionGuardada() {
+            const userName = localStorage.getItem('user_name');
+            const token = localStorage.getItem('google_token');
+
+            if (userName && token) {
+                mostrarVistaAutenticada(userName);
+                return;
+            }
+
+            mostrarVistaLogin();
+        }
+
         // Función que ejecuta Google automáticamente al loguearse con éxito
         function manejarLogin(response) {
             // El 'credential' es un JWT (JSON Web Token) enviado por Google
@@ -114,6 +146,10 @@
             
             // Mostramos los datos en la interfaz
             document.getElementById('user-name').innerText = payload.name;
+
+            // Persistimos sesión local para restaurar al recargar
+            localStorage.setItem('google_token', token);
+            localStorage.setItem('user_name', payload.name || 'usuario');
             
             // Intercambiamos de vista de forma simple
             document.getElementById('login-container').classList.add('hidden');
@@ -124,9 +160,18 @@
         }
 
         function cerrarSesion() {
-            // Limpiamos y recargamos la página para resetear el estado
-            location.reload();
+            // Limpiamos la sesión local y volvemos al estado de login
+            localStorage.removeItem('google_token');
+            localStorage.removeItem('user_name');
+            mostrarVistaLogin();
+
+            // Si la API está disponible, cerramos la sesión de Google One Tap
+            if (window.google && window.google.accounts && window.google.accounts.id) {
+                window.google.accounts.id.disableAutoSelect();
+            }
         }
+
+        document.addEventListener('DOMContentLoaded', evaluarSesionGuardada);
     </script>
     </main>
     <main class="d-none ">
