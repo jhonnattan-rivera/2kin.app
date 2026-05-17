@@ -5,18 +5,68 @@
     <title>Procesando acceso</title>
   </head>
   <body>
-    <p>Procesando inicio de sesion...</p>
+    <p id="status">Procesando inicio de sesion...</p>
     <script>
-      const token = __GOOGLE_CREDENTIAL__;
+      function parseParams(raw) {
+        const out = {};
+        const data = (raw || '').replace(/^#|^\?/, '');
+        if (!data) {
+          return out;
+        }
 
-      try {
-        const payload = JSON.parse(atob(token.split('.')[1]));
-        localStorage.setItem('google_token', token);
-        localStorage.setItem('user_name', payload.name || 'usuario');
-        window.location.replace('/');
-      } catch (error) {
-        document.body.innerText = 'No se pudo procesar el inicio de sesion.';
-        console.error('Error procesando redirect de Google:', error);
+        data.split('&').forEach(function (part) {
+          if (!part) {
+            return;
+          }
+          const pieces = part.split('=');
+          const key = decodeURIComponent(pieces[0] || '');
+          const value = decodeURIComponent(pieces.slice(1).join('=') || '');
+          out[key] = value;
+        });
+
+        return out;
+      }
+
+      function decodeJwtPayload(jwt) {
+        const middle = jwt.split('.')[1] || '';
+        const normalized = middle.replace(/-/g, '+').replace(/_/g, '/');
+        const padded = normalized + '='.repeat((4 - (normalized.length % 4)) % 4);
+        return JSON.parse(atob(padded));
+      }
+
+      const statusEl = document.getElementById('status');
+      const hashParams = parseParams(window.location.hash);
+      const queryParams = parseParams(window.location.search);
+      const params = Object.assign({}, queryParams, hashParams);
+
+      if (params.error) {
+        statusEl.innerText = 'Google devolvio un error: ' + params.error;
+        console.error('Error OAuth Google:', params);
+      } else {
+        const token = params.id_token || params.access_token || '';
+
+        if (!token) {
+          statusEl.innerText = 'No se recibio token en la redireccion.';
+          console.error('Redirect sin token:', params);
+        } else {
+          try {
+            let userName = 'usuario';
+
+            if (params.id_token) {
+              const payload = decodeJwtPayload(params.id_token);
+              userName = payload.name || payload.given_name || userName;
+            }
+
+            localStorage.setItem('google_token', token);
+            localStorage.setItem('user_name', userName);
+
+            statusEl.innerText = 'Inicio de sesion correcto. Redirigiendo...';
+            window.location.replace('/');
+          } catch (error) {
+            statusEl.innerText = 'No se pudo procesar el inicio de sesion.';
+            console.error('Error procesando redirect de Google:', error);
+          }
+        }
       }
     </script>
   </body>
